@@ -1,0 +1,15 @@
+@use "colors"
+
+@media (prefers-color-scheme: dark)
+
+
+a
+  color: colors.$link
+  text-decoration: none
+
+  &:hover
+    color: colors.$link-hover
+
+@media (prefers-color-scheme: dark)
+  html
+    color-scheme: dark
