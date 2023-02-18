@@ -2,6 +2,7 @@
 
 import './globals.sass'
 import React from "react";
+// @ts-ignore TODO
 import {dir} from "i18next";
 import {languages} from "../i18n/settings"
 
