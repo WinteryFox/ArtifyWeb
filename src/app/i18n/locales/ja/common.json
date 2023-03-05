@@ -1,4 +1,7 @@
 {
   "name": "アーティファイ",
-  "description": "こんにちは"
+  "slogan": "アートや撮影のハブだ。",
+  "meta": {
+    "description": "こんにちは"
+  }
 }

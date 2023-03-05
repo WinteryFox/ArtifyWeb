@@ -1,4 +1,7 @@
 {
   "name": "Artify",
-  "description": "Henlo"
+  "slogan": "The hub for art and photography.",
+  "meta": {
+    "description": "Henlo"
+  }
 }

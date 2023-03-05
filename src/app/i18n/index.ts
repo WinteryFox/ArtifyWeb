@@ -1,6 +1,7 @@
 import resourcesToBackend from 'i18next-resources-to-backend'
 import { initReactI18next } from 'react-i18next/initReactI18next'
 import { getOptions } from './settings'
+// @ts-ignore
 import {createInstance, ReactOptions} from "i18next";
 
 export const initI18next = async (language: string, ns: string) => {
@@ -18,5 +19,11 @@ export async function useTranslation(language: string, ns: string = "common", op
     return {
         t: i18nextInstance.getFixedT(language, Array.isArray(ns) ? ns[0] : ns, options.keyPrefix),
         i18n: i18nextInstance
+    }
+}
+
+export interface RouteParams {
+    params: {
+        language: string
     }
 }

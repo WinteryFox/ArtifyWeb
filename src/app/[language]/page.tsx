@@ -1,13 +1,13 @@
-import styles from './page.module.css'
-import {useTranslation} from "@/app/i18n";
+import styles from './page.module.sass'
+import {RouteParams, useTranslation} from "@/app/i18n";
 
 // noinspection JSUnusedGlobalSymbols
-export default async function Home(params: { language: string }) {
-  const {t} = await useTranslation(params.language)
+export default async function Home(params: RouteParams) {
+    const {t} = await useTranslation(params.params.language)
 
-  return (
-    <main className={styles.main}>
-      Henlo, world!
-    </main>
-  )
+    return (
+        <main className={styles.main}>
+            {t("slogan")}
+        </main>
+    )
 }

@@ -1,6 +1,6 @@
-import {useTranslation} from "@/app/i18n";
+import {RouteParams, useTranslation} from "@/app/i18n";
 
-export default async function Head(params: { params: { language: string } }) {
+export default async function Head(params: RouteParams) {
     const {t} = await useTranslation(params.params.language)
 
     return (

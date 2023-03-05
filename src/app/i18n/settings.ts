@@ -1,3 +1,4 @@
+// @ts-ignore
 import {InitOptions} from "i18next";
 
 export const fallbackLanguage = "en"
