@@ -1,0 +1,30 @@
+@import "./variables"
+
+html, body
+  height: 100%
+  margin: 0
+  padding: 0
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
+
+#root
+  height: 100%
+
+a
+  color: inherit
+  text-decoration: none
+
+  &:hover
+    cursor: pointer
+
+.dark
+  background-color: black
+  color: white
+
+.light
+  background-color: white
+  color: black
+
+.main
+  display: flex
+  height: calc(100% - $navbar-height)
