@@ -1,3 +1,5 @@
+@import "src/variables"
+
 .mosaic
   list-style: none
   margin: 0
@@ -8,10 +10,18 @@
 
   &-element
     flex: 1
-    min-width: 239.5px
-    min-height: 239.5px
+    min-width: 240px
+    min-height: 240px
     aspect-ratio: 1/1
     position: relative
+
+    @media (min-width: $small)
+      min-width: 230px
+      min-height: 230px
+
+    @media (min-width: $medium)
+      min-width: 130px
+      min-height: 130px
 
   &-image
     width: 100%

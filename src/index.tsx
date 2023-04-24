@@ -20,6 +20,7 @@ i18next
         fallbackLng: "en",
         load: "languageOnly",
         defaultNS: "common",
+        ns: "common",
         detection: {
             order: ['path', 'cookie', 'navigator', 'localStorage', 'subdomain', 'queryString', 'htmlTag'],
             lookupFromPathIndex: 0
