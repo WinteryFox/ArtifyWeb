@@ -10,6 +10,8 @@ import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import Home from "./pages/Home";
 import Illustration from "./pages/Illustration";
 import Error from "./components/Error"
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 i18next
     .use(Backend)
@@ -45,6 +47,14 @@ const router = createBrowserRouter([
                 element: <Illustration/>
             }
         ]
+    },
+    {
+        path: "/login",
+        element: <Login/>
+    },
+    {
+        path: "/register",
+        element: <Register/>
     }
 ])
 
