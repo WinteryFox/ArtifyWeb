@@ -21,11 +21,11 @@ export namespace Api {
 
             let expiry = localStorage.getItem(`${subject}_expiry`)
             if (expiry == null)
-                return config
+                expiry = "0"
 
             let now = Date.now() / 1000
             let delta = parseInt(expiry) - now
-            console.debug(`Delta is ${delta} with expiry ${expiry} minus now ${now} delta equals ${delta} seconds`)
+            console.debug(`Delta is ${delta} seconds (${delta / 60} minutes)`)
 
             let expired = delta <= 0
             if (expired) {
@@ -41,7 +41,7 @@ export namespace Api {
                 )
 
                 if (response.status !== 200) {
-                    console.error("Failed to refresh access token.")
+                    console.error("Failed to refresh access token, attempting request unauthorized")
                     return config
                 }
 
