@@ -4,8 +4,65 @@ export namespace Api {
     export const baseUrl: string = "http://localhost:8080/api"
 
     export const client = Axios.create({
-        baseURL: Api.baseUrl
+        baseURL: Api.baseUrl,
+        withCredentials: true
     })
+
+    client.interceptors.request.use(
+        async (config) => {
+            if (config.url === "/refresh")
+                return config
+
+            let subject = localStorage.getItem("current_subject")
+            if (subject == null)
+                return config
+
+            console.debug(`Current subject is ${subject}`)
+
+            let expiry = localStorage.getItem(`${subject}_expiry`)
+            if (expiry == null)
+                return config
+
+            let now = Date.now() / 1000
+            let delta = parseInt(expiry) - now
+            console.debug(`Delta is ${delta} with expiry ${expiry} minus now ${now} delta equals ${delta} seconds`)
+
+            let expired = delta <= 0
+            if (expired) {
+                console.debug("Access token is expired, refreshing")
+
+                let response = await client.post<Jwt>(
+                    "/refresh",
+                    {
+                        id: subject,
+                        device_key: localStorage.getItem(`${subject}_device_key`)!!,
+                        refresh_token: localStorage.getItem(`${subject}_refresh_token`)!!
+                    }
+                )
+
+                if (response.status !== 200) {
+                    console.error("Failed to refresh access token.")
+                    return config
+                }
+
+                localStorage.setItem(`${subject}_access_token`, response.data.access_token)
+                localStorage.setItem(`${subject}_id_token`, response.data.id_token)
+                localStorage.setItem(`${subject}_expiry`, String(Date.now() / 1000 + response.data.expires_in))
+            }
+
+            let accessToken = localStorage.getItem(`${subject}_access_token`)!!
+            config.headers.setAuthorization(`Bearer ${accessToken}`, true)
+
+            return config
+        },
+        (error) => Promise.reject(error)
+    )
+
+    export interface RefreshTokenRequest {
+        id: string
+        refresh_token: string
+        device_key: string
+    }
 
     export interface Jwt {
         access_token: string
@@ -22,7 +79,7 @@ export namespace Api {
         password: string
     }
 
-    export interface Login {
+    export interface LoginRequest {
         email: string
         password: string
         device: Device | null

@@ -3,6 +3,8 @@ import {useTranslation} from "react-i18next";
 import {Link, useNavigate} from "react-router-dom";
 import {FormEventHandler, useState} from "react";
 import {Api} from "../../api";
+import jwt_decode from "jwt-decode";
+import {AxiosResponse} from "axios";
 
 export default function Login() {
     const {t} = useTranslation("auth")
@@ -18,9 +20,10 @@ export default function Login() {
         setDisabled(true)
         setError(null)
 
-        const deviceKey = localStorage.getItem("device_key")
-        const deviceGroupKey = localStorage.getItem("device_group_key")
-        const devicePassword = localStorage.getItem("device_password")
+        const currentSubject = localStorage.getItem("current_subject")
+        const deviceKey = localStorage.getItem(`${currentSubject}_device_key`)
+        const deviceGroupKey = localStorage.getItem(`${currentSubject}_device_group_key`)
+        const devicePassword = localStorage.getItem(`${currentSubject}_device_password`)
         let device: Api.Device | null = null
         if (deviceKey && deviceGroupKey && devicePassword)
             device = {
@@ -30,21 +33,29 @@ export default function Login() {
             }
 
         try {
-            const response = await Api.client.post<Api.Jwt>("/login", {
-                email: username,
-                password: password,
-                device: device
-            })
+            const response = await Api.client.post<Api.Jwt, AxiosResponse<Api.Jwt, any>, Api.LoginRequest>(
+                "/login",
+                {
+                    email: username,
+                    password: password,
+                    device: device
+                }
+            )
 
-            localStorage.setItem("access_token", response.data.access_token)
-            localStorage.setItem("id_token", response.data.id_token)
-            localStorage.setItem("refresh_token", response.data.refresh_token)
-            localStorage.setItem("expiry", String(Date.now() + response.data.expires_in))
+            let subject = currentSubject != null
+                ? currentSubject
+                : (jwt_decode(response.data.access_token) as any).sub
+
+            localStorage.setItem(`current_subject`, subject)
+            localStorage.setItem(`${subject}_access_token`, response.data.access_token)
+            localStorage.setItem(`${subject}_id_token`, response.data.id_token)
+            localStorage.setItem(`${subject}_refresh_token`, response.data.refresh_token)
+            localStorage.setItem(`${subject}_expiry`, String(Date.now() / 1000 + response.data.expires_in))
 
             if (response.data.device) {
-                localStorage.setItem("device_key", response.data.device.key)
-                localStorage.setItem("device_group_key", response.data.device.group_key)
-                localStorage.setItem("device_password", response.data.device.password)
+                localStorage.setItem(`${subject}_device_key`, response.data.device.key)
+                localStorage.setItem(`${subject}_device_group_key`, response.data.device.group_key)
+                localStorage.setItem(`${subject}_device_password`, response.data.device.password)
             }
 
             navigate("/")
