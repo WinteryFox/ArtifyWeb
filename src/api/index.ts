@@ -25,11 +25,11 @@ export namespace Api {
 
             let now = Date.now() / 1000
             let delta = parseInt(expiry) - now
-            console.debug(`Delta is ${delta} seconds (${delta / 60} minutes)`)
+            console.debug(`Delta is ${Math.floor(delta)}s (${Math.floor(delta / 60)}m ${Math.floor(delta % 60)}s)`)
 
             let expired = delta <= 0
             if (expired) {
-                console.debug("Access token is expired, refreshing")
+                console.info("Access token is expired, refreshing")
 
                 let response = await client.post<Jwt>(
                     "/refresh",
@@ -48,10 +48,14 @@ export namespace Api {
                 localStorage.setItem(`${subject}_access_token`, response.data.access_token)
                 localStorage.setItem(`${subject}_id_token`, response.data.id_token)
                 localStorage.setItem(`${subject}_expiry`, String(Date.now() / 1000 + response.data.expires_in))
+
+                console.info("Successfully refreshed access token")
             }
 
             let accessToken = localStorage.getItem(`${subject}_access_token`)!!
             config.headers.setAuthorization(`Bearer ${accessToken}`, true)
+
+            console.debug(`Set Authorization for ${config.method?.toUpperCase()} ${config.url}`)
 
             return config
         },

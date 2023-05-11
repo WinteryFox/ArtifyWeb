@@ -12,6 +12,8 @@ import Illustration from "./pages/Illustration";
 import Error from "./components/Error"
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import {Provider} from "react-redux";
+import store from "./api/store";
 
 i18next
     .use(Backend)
@@ -63,6 +65,8 @@ const root = ReactDOM.createRoot(
 );
 root.render(
     <React.StrictMode>
-        <RouterProvider router={router}/>
+        <Provider store={store}>
+            <RouterProvider router={router}/>
+        </Provider>
     </React.StrictMode>
 );
