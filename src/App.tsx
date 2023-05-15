@@ -10,9 +10,10 @@ export default function App() {
     const dispatch = useAppDispatch()
 
     useEffect(() => {
-        Api.client.get<Api.User>("/users/@me")
-            .then((response) => dispatch(setUser(response.data)))
-            .catch()
+        if (localStorage.getItem("current_subject") != null)
+            Api.client.get<Api.User>("/users/@me")
+                .then((response) => dispatch(setUser(response.data)))
+                .catch()
     }, [])
 
     return (

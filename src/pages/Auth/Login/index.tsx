@@ -1,21 +1,24 @@
-import background from "./cherry_blossom.svg"
 import {useTranslation} from "react-i18next";
 import {Link, useNavigate} from "react-router-dom";
 import {FormEventHandler, useState} from "react";
-import {Api} from "../../api";
+import {Api} from "../../../api";
 import jwt_decode from "jwt-decode";
-import {AxiosResponse} from "axios";
+import {AxiosError, AxiosResponse} from "axios";
+import Input from "../../../components/Input";
+import {setUser} from "../../../api/store";
+import {useAppDispatch} from "../../../api/hooks";
 
 export default function Login() {
     const {t} = useTranslation("auth")
     const navigate = useNavigate()
+    const dispatch = useAppDispatch()
 
     const [disabled, setDisabled] = useState<boolean>(false)
     const [error, setError] = useState<string | null>(null)
-    const [username, setUsername] = useState<string>("")
+    const [email, setEmail] = useState<string>("")
     const [password, setPassword] = useState<string>("")
 
-    const login: FormEventHandler<HTMLFormElement> = async event => {
+    const login: FormEventHandler<HTMLFormElement> = async (event) => {
         event.preventDefault()
         setDisabled(true)
         setError(null)
@@ -36,7 +39,7 @@ export default function Login() {
             const response = await Api.client.post<Api.Jwt, AxiosResponse<Api.Jwt, any>, Api.LoginRequest>(
                 "/login",
                 {
-                    email: username,
+                    email: email,
                     password: password,
                     device: device
                 }
@@ -58,46 +61,49 @@ export default function Login() {
                 localStorage.setItem(`${subject}_device_password`, response.data.device.password)
             }
 
+            Api.client.get<Api.User>("/users/@me")
+                .then((response) => dispatch(setUser(response.data)))
+                .catch()
+
             navigate("/")
-        } catch (ignored) {
-            setError(t("invalid-credentials")!!)
+        } catch (error) {
+            setError("Unknown error occurred")
+
+            if (error instanceof AxiosError) {
+                let err = error as AxiosError<Api.Code, any>
+
+                switch (err.response?.data.code) {
+                    case 100:
+                        setError(t("auth:confirm-email"))
+                        break
+                    case 101:
+                        setError(t("auth:invalid-credentials"))
+                        break
+                    case 107:
+                        setError(t("auth:account-disabled"))
+                        break
+                }
+            }
+
             setDisabled(false)
         }
     }
 
-    return <main className={"main"}>
-        <div className={"background"}>
-            <img alt={"background image"} src={background} className={"background-image"}/>
-        </div>
-
+    return <>
         <form className={"form"} onSubmit={login}>
             <h1>{t("welcome-back")}</h1>
 
-            <label htmlFor={"username"}>
-                {t("username")}
-                <span className={"required"}>
-                    *
-                    {error && <span> - {error}</span>}
-                </span>
-            </label>
-            <input className={"input"}
-                   type={"email"}
-                   id={"username"}
-                   style={{marginBottom: "1rem"}}
-                   onChange={e => setUsername(e.target.value)}
+            <Input id={"username"}
+                   label={t("username")}
+                   type={"text"}
+                   error={error}
+                   onChange={e => setEmail(e.target.value)}
                    required/>
 
-            <label htmlFor={"password"}>
-                {t("password")}
-                <span className={"required"}>
-                    *
-                    {error && <span> - {error}</span>}
-                </span>
-            </label>
-            <input className={"input"}
+            <Input id={"password"}
+                   label={t("password")}
                    type={"password"}
-                   id={"password"}
-                   style={{marginBottom: "1rem"}}
+                   error={error}
                    onChange={e => setPassword(e.target.value)}
                    required/>
 
@@ -105,7 +111,7 @@ export default function Login() {
                 {t("login")}
             </button>
 
-            <Link className={"link"} to={"/register"}>{t("need-account")}</Link>
+            <Link className={"link"} to={"/auth/register"}>{t("need-account")}</Link>
         </form>
-    </main>
+    </>
 }

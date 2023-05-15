@@ -62,6 +62,11 @@ export namespace Api {
         (error) => Promise.reject(error)
     )
 
+    export interface Code {
+        code: number
+        message: string
+    }
+
     export interface RefreshTokenRequest {
         id: string
         refresh_token: string
@@ -81,6 +86,13 @@ export namespace Api {
         key: string
         group_key: string
         password: string
+    }
+
+    export interface RegisterRequest {
+        email: string
+        password: string
+        handle: string
+        username: string
     }
 
     export interface LoginRequest {

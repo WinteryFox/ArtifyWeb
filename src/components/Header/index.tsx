@@ -31,7 +31,7 @@ export default function Header() {
                         </span>
                         <span>{self.username}</span>
                     </Link> :
-                    <Link to={"/login"} className={"button"}>
+                    <Link to={"/auth/login"} className={"button"}>
                         <span className={"icon"}>
                             <FontAwesomeIcon icon={faRightToBracket}/>
                         </span>
