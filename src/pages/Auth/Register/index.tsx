@@ -3,6 +3,7 @@ import {useTranslation} from "react-i18next";
 import {FormEventHandler, useState} from "react";
 import Input from "../../../components/Input";
 import {Api} from "../../../api";
+import {AxiosError} from "axios";
 
 export default function Index() {
     const {t} = useTranslation(["auth"])
@@ -17,16 +18,36 @@ export default function Index() {
     const register: FormEventHandler<HTMLFormElement> = async (event) => {
         event.preventDefault()
 
+        setDisabled(true)
+
         try {
             await Api.client.post(
                 "/register",
                 {
-                    // TODO
+                    email,
+                    password,
+                    handle,
+                    username
                 } as Api.RegisterRequest
             )
         } catch (error) {
-            
+            setError("Unknown error occurred")
+
+            if (error instanceof AxiosError) {
+                let err = error as AxiosError<Api.Code, any>
+
+                switch (err.response?.data?.code) {
+                    case 102:
+                        setError(t("auth:invalid-password"))
+                        break
+                    case 103:
+                        setError(t("auth:email-taken"))
+                        break
+                }
+            }
         }
+
+        setDisabled(false)
     }
 
     return <>
@@ -36,6 +57,7 @@ export default function Index() {
             <Input id={"email"}
                    label={t("email")}
                    type={"email"}
+                   error={error}
                    onChange={e => setEmail(e.target.value)}
                    required/>
 
