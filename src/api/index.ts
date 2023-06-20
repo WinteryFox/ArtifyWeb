@@ -31,25 +31,35 @@ export namespace Api {
             if (expired) {
                 console.info("Access token is expired, refreshing")
 
-                let response = await client.post<Jwt>(
-                    "/refresh",
-                    {
-                        id: subject,
-                        device_key: localStorage.getItem(`${subject}_device_key`)!!,
-                        refresh_token: localStorage.getItem(`${subject}_refresh_token`)!!
-                    }
-                )
+                try {
+                    let response = await client.post<Jwt>(
+                        "/refresh",
+                        {
+                            id: subject,
+                            device_key: localStorage.getItem(`${subject}_device_key`)!!,
+                            refresh_token: localStorage.getItem(`${subject}_refresh_token`)!!
+                        }
+                    )
 
-                if (response.status !== 200) {
-                    console.error("Failed to refresh access token, attempting request unauthorized")
+                    localStorage.setItem(`${subject}_access_token`, response.data.access_token)
+                    localStorage.setItem(`${subject}_id_token`, response.data.id_token)
+                    localStorage.setItem(`${subject}_expiry`, String(Date.now() / 1000 + response.data.expires_in))
+
+                    console.info("Successfully refreshed access token")
+                } catch (e) {
+                    console.error("Failed to refresh access token, removing old tokens from localStorage")
+
+                    localStorage.removeItem("current_subject")
+                    localStorage.removeItem(`${subject}_access_token`)
+                    localStorage.removeItem(`${subject}_id_token`)
+                    localStorage.removeItem(`${subject}_refresh_token`)
+                    localStorage.removeItem(`${subject}_expiry`)
+                    localStorage.removeItem(`${subject}_device_group_key`)
+                    localStorage.removeItem(`${subject}_device_key`)
+                    localStorage.removeItem(`${subject}_device_password`)
+
                     return config
                 }
-
-                localStorage.setItem(`${subject}_access_token`, response.data.access_token)
-                localStorage.setItem(`${subject}_id_token`, response.data.id_token)
-                localStorage.setItem(`${subject}_expiry`, String(Date.now() / 1000 + response.data.expires_in))
-
-                console.info("Successfully refreshed access token")
             }
 
             let accessToken = localStorage.getItem(`${subject}_access_token`)!!
