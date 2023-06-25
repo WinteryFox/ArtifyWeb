@@ -31,7 +31,7 @@ export default function Input(props: {
                 <input type={passwordVisible ? "text" : props.type}
                        id={props.id}
                        onChange={e => props.onChange(e)}
-                       required={props.required != null ? props.required : false}/>
+                       required={props.required ?? false}/>
             </div>
 
             {props.type == "password" &&

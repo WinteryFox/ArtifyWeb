@@ -45,9 +45,7 @@ export default function Login() {
                 }
             )
 
-            let subject = currentSubject != null
-                ? currentSubject
-                : (jwt_decode(response.data.access_token) as any).sub
+            let subject = currentSubject ?? (jwt_decode(response.data.access_token) as any).sub
 
             localStorage.setItem(`current_subject`, subject)
             localStorage.setItem(`${subject}_access_token`, response.data.access_token)

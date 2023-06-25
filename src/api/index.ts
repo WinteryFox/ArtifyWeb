@@ -126,6 +126,6 @@ export namespace Api {
         comments_enabled: boolean
         is_private: boolean
         is_ai: boolean
-        hashes: Array<String>
+        hashes: Array<string>
     }
 }
