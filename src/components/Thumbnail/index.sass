@@ -1,0 +1,17 @@
+@import "src/variables"
+
+.thumbnail
+  img
+    border-radius: 15px
+    width: 130px
+    height: 130px
+    aspect-ratio: 1/1
+    position: relative
+
+    @media (min-width: $small)
+      width: 160px
+      height: 160px
+
+    @media (min-width: $medium)
+      width: 280px
+      height: 280px

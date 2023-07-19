@@ -1,13 +1,18 @@
 @import "./variables"
 
-html, body, #root
-  width: 100%
-  height: 100%
+html, body
+  width: 100vw
+  max-width: 100%
+  height: 100vh
+  max-height: 100%
   margin: 0
   padding: 0
   -webkit-font-smoothing: antialiased
   -moz-osx-font-smoothing: grayscale
   font-family: sans-serif
+
+p
+  margin: 0
 
 a
   color: inherit
@@ -25,7 +30,6 @@ a
   color: black
 
 .main
-  display: flex
   width: 100%
   height: calc(100% - $navbar-height)
 
@@ -49,7 +53,8 @@ a
   padding: 30px 40px
   width: 100%
   margin: auto
-  border-radius: 0
+  border: 1px solid gray
+  box-shadow: 3px 3px 5px black
 
   h1
     margin-top: 0

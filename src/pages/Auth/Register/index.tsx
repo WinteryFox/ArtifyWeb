@@ -18,10 +18,11 @@ export default function Index() {
     const register: FormEventHandler<HTMLFormElement> = async (event) => {
         event.preventDefault()
 
+        setError(null)
         setDisabled(true)
 
         try {
-            await Api.client.post(
+            let response = await Api.client.post(
                 "/register",
                 {
                     email,
@@ -30,8 +31,10 @@ export default function Index() {
                     username
                 } as Api.RegisterRequest
             )
+
+            // TODO: Make verification page and redirect there
         } catch (error) {
-            setError("Unknown error occurred")
+            setError("Unknown error occurred") // TODO: Localize
 
             if (error instanceof AxiosError) {
                 let err = error as AxiosError<Api.Code, any>

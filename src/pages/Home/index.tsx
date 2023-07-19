@@ -1,36 +1,51 @@
 import "./index.sass"
 import React, {useEffect, useState} from "react";
 import {Api} from "../../api";
-import {Link} from "react-router-dom";
+import Thumbnail from "../../components/Thumbnail";
+import Carousel from "../../components/Carousel";
+import {useTranslation} from "react-i18next";
 
 export default function Home() {
-    const [illustrations, setIllustrations] = useState<Array<Api.Illustration> | null>(null)
+    const {t} = useTranslation(["home"])
+
+    const [following, setFollowing] = useState<Array<Api.Illustration>>([])
+    const [recent, setRecent] = useState<Array<Api.Illustration>>([])
 
     useEffect(() => {
-        Api.client.get<Array<Api.Illustration>>("/illustrations")
-            .then(illustrations => setIllustrations(illustrations.data))
+        Api.client.get<Array<Api.Illustration>>("/illustrations?mode=4")
+            .then(illustrations => setFollowing(illustrations.data))
+
+        Api.client.get<Array<Api.Illustration>>("/illustrations?mode=3")
+            .then(illustrations => setRecent(illustrations.data))
     }, [])
 
-    return (
-        !illustrations ? (
-            <>loading</>
-        ) : (
-            <ul className={"mosaic"}>
-                {illustrations.map((illustration) => (
-                    <li key={illustration.id.toString()} className={"mosaic-element"}>
-                        <Link to={`/illustrations/${illustration.id}`}>
-                            <picture>
-                                <source srcSet={`${Api.baseUrl}/assets/${illustration.hashes[0]}?size=512`}
-                                        media={"(min-width: 1000px)"}/>
-                                <source srcSet={`${Api.baseUrl}/assets/${illustration.hashes[0]}?size=256`}
-                                        media={"(min-width: 600px)"}/>
-                                <img alt={illustration.title} className={"mosaic-image"}
-                                     src={`${Api.baseUrl}/assets/${illustration.hashes[0]}?size=512`}/>
-                            </picture>
-                        </Link>
-                    </li>
-                ))}
-            </ul>
-        )
-    )
+    return <section className={"carousels"}>
+        <section>
+            {following.length == 0 ?
+                <></> :
+                <>
+                    <h1>{t("carousels.following")}</h1>
+                    <Carousel>
+                        {following.map((illustration) =>
+                            <li key={illustration.id.toString()} className={"mosaic-element"}>
+                                <Thumbnail illustration={illustration}/>
+                            </li>)}
+                    </Carousel>
+                </>}
+        </section>
+
+        <section>
+            {recent.length == 0 ?
+                <></> :
+                <>
+                    <h1>{t("carousels.recent")}</h1>
+                    <Carousel>
+                        {recent.map((illustration) =>
+                            <li key={illustration.id.toString()} className={"mosaic-element"}>
+                                <Thumbnail illustration={illustration}/>
+                            </li>)}
+                    </Carousel>
+                </>}
+        </section>
+    </section>
 }

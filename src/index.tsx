@@ -23,7 +23,7 @@ i18next
     .init({
         supportedLngs: ["en", "ja"],
         fallbackLng: "en",
-        load: "languageOnly",
+        load: "all",
         defaultNS: "common",
         ns: "common",
         detection: {

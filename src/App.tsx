@@ -16,12 +16,10 @@ export default function App() {
                 .catch()
     }, [])
 
-    return (
-        <>
-            <Header/>
-            <main className={"main"}>
-                <Outlet/>
-            </main>
-        </>
-    );
+    return <>
+        <Header/>
+        <main className={"main"}>
+            <Outlet/>
+        </main>
+    </>
 }
